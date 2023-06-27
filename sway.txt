@@ -1,0 +1,52 @@
+Un'introduzione a Sway per il mio amico Jonathan
+
+I gestori di finestre a riggiole hanno in primo luogo un appeal grafico non indifferente che richiama nostalgicamente un'epoca lontana.
+Cosa più importante tuttavia e meno scontata, il loro design squadrato e minimale è un toccasana per la concentrazione e l'organizzazione.
+
+Poiché ho trovato io stesso ostico riuscire ad avere un desktop funzionante, voglio condividere in queste note un percorso consigliato, senza alcuna pretesa di completezza o perfezione.
+Una guida che ti spieghi perché alcune cose funzionino in un certo modo, e che anticipi problemi nel quale potrai imbatterti è molto meglio di una documentazione fin troppo asciutta, che sembra essere minimalista come il software che descrive.
+
+Installa Sway dal tuo gestore di pacchetti. Ad esempio su Arch Linux userei:
+# pacman -S sway bemenu-wayland foot mako seatd swaybg swayidle swaylock waybar wlroots xorg-xwayland
+Questo elenco di pacchetti contiene già dei programmi richiesti dal file di configurazione, così quando lo avvii non sembra che non funzioni niente.
+
+Il file di configurazione è il luogo in cui è definito completamente il comportamento del gestore di finestre.
+Forse è necessario ora fare una precisazione sul come Sway sia un gestore di finestre e non ambiente desktop completo, perché tu abbia le giuste aspettative.
+Un gestore finestre, come dice il nome, gestisce le finestre; le posiziona sullo schermo secondo alcune regole precise, ad esempio riempendo sempre tutto lo spazio disponibile.
+È possibile che queste vengano affiancate orizzontalmente o vertricalmente, in tab come in un browser oppure sorvapposte come se fossero impilate una sull'altra.
+Le ridimensiona, le sposta, le nasconde. Può gestire diversi desktop virtuali e passare le finestre da uno all'altro. Ci siamo capiti, gestisce le finestre.
+Non aspettarti che Sway faccia altro; il suo compito è solo gestire le finestre nel miglior modo che riesce e con cui l'hai configurato.
+
+Perché tutto questo pippone? Perché so che mi chiederai "come si alza il volume qui dentro?".
+Con qualcos'altro, non direttamente con Sway, perché non è il suo compito e va bene così.
+Dopo ovviamente ti faccio vedere come si fa, ma il senso è che esiste un programma il cui compito è gestire il volume, e a Sway possiamo dire che, quando premiamo un particolare tasto, deve eseguire tale comando.
+Ancora su questo, poi la finisco, tutte le icone carine che sei abituato a vedere su Plasma saranno fornite da un programma esterno, quello che ti pare, che disegna sullo schermo una barra e vi posiziona dei pulsanti che quando premuti fanno cose a tua scelta.
+
+Inizia ad aprire il file di configurazione e guardare come è fatto; dovrebbe spiegarsi abbastanza da solo; se non lo fa fammi sapere ma prima cerca nel manuale per cortesia.
+$ man 5 sway
+
+Copia il file che si trova in /etc/sway/config nella posizione di configurazione di default dei tuoi programmi; per me il file va in ~/.config/sway/config
+A questo punto puoi iniziare a farci amicizia e modificarlo come più ti pare.
+
+La prima cosa che ti consiglio di fare è impostare la tastiera italiana, visto che probabilmente stai usando quella.
+Inserisci in uno spazio vuoto del file di configurazione questo:
+input * {
+    xkb_layout it
+}
+
+Ora dovresti essere pronto per avviare per la prima volta Sway.
+Chiudi la sessione corrente e dalla schermata di login trova il menu che ti fa scegliere il desktop da avviare. Scelgi la vita, scegli Sway.
+Se tutto è andato bene, ti esce il desktop con una barra di stato. Nota quanto si è avviato velocemente.
+Apri un terminale col tasto del logo + invio. Da qui in poi sai come cavartela.
+
+Nel file di configurazione è indicato un modificatore, che tieni premuto per effettuare le operazioni più comuni;
+è indicato con $mod e inizialmente vi è assegnato il tasto Mod4 che sarebbe il tasto col logo malefico.
+In generale si può impostare qualsiasi variabile mettendoci il dollaro e il nome che vuoi.
+Per prima cosa puoi provare a impostare il tuo terminale preferito; poi puoi cambiare lo sfondo.
+Ogni volta che modifichi il file, ricarica la configurazione per applicare le nuove impostazioni;
+il comando interno di Sway è reload, e di base è impostato su logo + shift + c.
+
+Da qui in poi dovresti iniziare a sbariare un po' con la configurazione e poi finalmente usare il sistema e basta.
+Se sei proprio curioso di sapere come ho impostato il mio sistema, ho caricato i file in questa repository:
+https://gitlab.com/visika/punti
+È molto basic e sono alle prime armi anche io quindi non aspettarti le magie.
