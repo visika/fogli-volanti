@@ -1,0 +1,48 @@
+#+title: Programmare su ibisco
+Trovo molto pratico collegarmi in SSH e modificare file remoti con Emacs, rispetto alle soluzioni che ho trovato in giro.
+Esistono molti modi alternativi, dal connettersi direttamente con =ssh= in un terminale, usare =scp=, =rsync=, /FileZilla/, ma per programmare e lavorare interattivamente con gli output questo è il modo migliore che ho trovato.
+È composto di una configurazione del sistema operativo e di una configurazione di Emacs. Andiamo a vedere.
+* Configurazione SSH di Linux
+È bene configurare il proprio sistema per velocizzare le operazioni ripetitive, come l'inserimento dell'indirizzo completo della macchina remota o delle password.
+Per fare ciò, si modifica il file =~/.ssh/config=.
+La mia configurazione segue l'esempio qui sotto,
+da cui sono stati omessi i dati sensibili:
+
+#+begin_src
+Host ibisco
+    HostName <nome-dominio>
+    User <nome-utente>
+    ServerAliveInterval 60
+#+end_src
+
+In questo modo per connettermi, invece che inserire l'indirizzo completo e il nome utente, basta che scriva nella riga di comando ~ssh ibisco~ e mi verrà chiesta la password per l'utente corretto.
+
+Esiste un modo sicuro per autenticare l'accesso e non dover immettere una password ogni volta che ci si connette. Questo consiste nell'uso delle chiavi SSH.
+Le *chiavi SSH* sono una coppia di file, presenti nella cartella =~/.ssh/=, che condividono lo stesso nome tranne per il fatto che una finisce con =.pub=, detta chiave pubblica.
+
+Se non si ha già una chiave SSH nella cartella, se ne può creare una[fn:1] eseguendo il comando ~ssh-keygen -t ed25519 -C "your_email@example.com"~
+
+Se si inserisce il contenuto della chiave pubblica in una nuova riga sulla macchina remota all'interno del file =~/.ssh/authorized_keys=, allora saremo in grado di connetterci automaticamente dal prossimo accesso.
+
+[fn:1] [[https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#generating-a-new-ssh-key][GitHub Docs: Generating a new SSH key]]
+
+* Connessione SSH con Emacs
+Possiamo usare Emacs per esplorare il filesystem remoto e modificarne i file, con alcuni vantaggi. Ad esempio, a differenza di eseguire vim sulla macchina remota, la modifica dei file avviene su una copia temporanea locale, quindi si può scrivere fluidamente senza interruzioni, e le modifiche sono trasmesse tramite la rete solo quando effettivamente si salva il file.
+
+Trovare un file remoto funziona in modo molto simile al trovare un file sul proprio computer; usare =M-x find-file= e andare all'indirizzo =/ssh:ibisco:<posizione-file>=. Connettendoci in questo modo, senza saperlo stiamo usando il pacchetto TRAMP di Emacs.
+* Sincronizzazione tra cartelle locali e remote
+Si può definire una configurazione di sincronizzazione per singola cartella, comunicando a quale cartella remota è collegata una cartella locale con le sue eventuali sottocartelle.
+Per fare ciò si usa il pacchetto /emacs-ssh-deploy/.
+In /Doom Emacs/ questo si abilita con il modulo /upload/ in =init.el=.
+La configurazione avviene definendo variabili locali per le cartelle che si desidera;
+all'interno di una cartella di lavoro, ad esempio, creo il file =.dir-locals.el= con il seguente contenuto:
+#+begin_src lisp
+((nil . ((ssh-deploy-root-local . "<percorso-locale-con-slash-alla-fine/>")
+         (ssh-deploy-root-remote . "/ssh:ibisco:<percorso-remoto-con-slash-alla-fine/>")
+         (ssh-deploy-on-explicit-save . nil))))
+#+end_src
+La presenza di questo file, mi permette di lavorare sul mio PC con calma a un file e poi caricarlo nella posizione giusta in un attimo.
+Questo si fa con =M-x ssh-deploy-upload-handler=.
+Doom Emacs dedica un menu alle altre opzioni disponibili, accessibile con =SPC r=.
+Le opzioni che uso più spesso sono =SPC r x= (~ssh-deploy-diff-handler~) per visualizzare le differenze tra file locale e corrispondente file remoto in una vista interattiva di /ediff/;
+=SPC r E= (~ssh-deploy-remote-terminal-eshell-handler~) per aprire un terminale sulla macchina remota nella posizione corrispondente alla cartella locale in cui sto lavorando, ad esempio per eseguire uno /sbatch/ del file appena caricato.
